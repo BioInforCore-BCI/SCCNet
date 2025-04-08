@@ -1,28 +1,38 @@
-# cSCCNet: Enhanced Metastasis Risk Prediction in Cutaneous Squamous Cell Carcinoma Using Deep Learning and Computational Histopathology by cSCCNet
+# Enhanced Metastasis Risk Prediction in Cutaneous Squamous Cell Carcinoma Using Deep Learning and Computational Histopathology 
+
+Emilia Peleva*, Yue Chen*, Bernhard Finke, Hasan Rizvi, Eugene Healy, Chester Lai, Paul Craig, William Rickaby, Christina Schoenherr, Craig Nourse, Charlotte Proby, Gareth J Inman, Irene M. Leigh, Catherine A. Harwood, Jun Wang
 
 To replicate the workflow of the paper run the python files in the following order:
 
-1. pre-processing
-2. hypertuning
-3. k-fold
-4. full-model
-5. predictions
-6. full-model
+1. pre-processing: Performs colour normalisation using the Macenko method.
+2. hypertuning: Uses the Keras tuner to compare various model architectures and hyperparameters.
+3. k-fold: Performs 5-fold cross validation. 
+4. full-model: For final model training on the entire training cohort.
+5. predictions: Generates tile-level predictions using the trained model.
+6. heatmaps: Generates heatmaps based on tile-level predictions. 
 
 
-# Define the model architecture
-def create_model():
-    input_layer = Input(shape=(512, 512, 3))  # Input layer
+# Load a trained model
 
-    # Load ResNet50 as backbone (excluding top layers)
-    resnet_base = ResNet50(weights=None, include_top=False, input_tensor=input_layer)
+To load a pre-trained model to predict or fine-tune on your own dataset simply download your preferred model from the models folder and run the below code snippet, switching 'model_name' with the correct filename for your model.
 
-    x = GlobalAveragePooling2D()(resnet_base.output)  # Global Average Pooling
-    x = Dropout(0.5)(x)  # Dropout for regularization
-    output_layer = Dense(1, activation='sigmoid')(x)  # Final classification layer
+    from tensorflow import keras
+    from tensorflow.keras.applications import ResNet50
+    from tensorflow.keras.layers import Input, GlobalAveragePooling2D, Dropout, Dense
+    
+    def create_model():
+        input_layer = Input(shape=(512, 512, 3))  # Input layer
+    
+        # Load ResNet50 as backbone (excluding top layers)
+        resnet_base = ResNet50(weights=None, include_top=False, input_tensor=input_layer)
+    
+        x = GlobalAveragePooling2D()(resnet_base.output)  # Global Average Pooling
+        x = Dropout(0.5)(x)  # Dropout for regularization
+        output_layer = Dense(1, activation='sigmoid')(x)  # Final classification layer
+    
+        model = keras.Model(inputs=input_layer, outputs=output_layer, name="model")
+    
+        return model
 
-    model = keras.Model(inputs=input_layer, outputs=output_layer, name="model")
-
-    return model
-
-    new_model.load_weights('risk_model2_weights.h5', by_name=True)
+    new_model = create_model()
+    new_model.load_weights('model_name', by_name=True)
