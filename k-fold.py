@@ -146,7 +146,7 @@ def main():
                         help="Number of classes. default=2")
     parser.add_argument("--learning_rate", type=float, default=1e-4,
                         help="learning rate. default=1e-4")
-    parser.add_argument("--train_table", default="/data/Train.csv",
+    parser.add_argument("--train_table", default="/data/BCI-DigitalPath/Emilia/QuPath/meta/ROIjpgTrain_short.csv",
                         help="path to train table'")
     parser.add_argument("--data_shape", type=int, default=512,
                         help="shape")
@@ -241,51 +241,8 @@ def main():
         strategy = tf.distribute.MirroredStrategy()
     else:
         raise Exception("Please choose a training strategy")
-    with strategy.scope():
-        # set model architecture
-        if pretrained_model:
-            weights = 'imagenet'
-        else:
-            weights = None
-        if model.lower() == "resnet101":
-            base_model = tf.keras.applications.resnet.ResNet101(include_top=False, weights=weights,
-                                                                input_shape=image_shape, pooling=None)
-        elif model.lower() == "resnet50":
-            base_model = tf.keras.applications.resnet.ResNet50(include_top=False, weights=weights,
-                                                               input_shape=image_shape, pooling=None)
-        elif model.lower() == "inception":
-            base_model = tf.keras.applications.InceptionV3(include_top=False, weights=weights,
-                                                           input_shape=image_shape, pooling=None)
-        else:
-            raise Exception("Please enter resnet101 or resnet50 to train")
-
-        inputs = tf.keras.Input(shape=image_shape)
-
-        m = base_model(inputs)
-
-        # GlobalAveragePooling2D layer was used to replace flatten layer to avoid overfitting
-        m = tf.keras.layers.GlobalAveragePooling2D()(m)
-
-        m = Dropout(drop_out)(m)
-
-        if n_class > 2:
-            outputs = tf.keras.layers.Dense(n_class, activation="softmax")(m)
-            loss_fn = losses.CategoricalCrossentropy(from_logits=False)
-            metrics_type = metrics.CategoricalAccuracy()
-            print("soft max activation is used in dense layer, CategoricalCrossentropy is used as loss function")
-        else:
-            outputs = tf.keras.layers.Dense(1, activation="sigmoid")(m)
-            loss_fn = losses.BinaryCrossentropy(from_logits=False)
-            metrics_type = metrics.BinaryAccuracy()
-            print("sigmoid activation is used in dense layer, BinaryCrossentropy is used as loss function")
-
-        final = tf.keras.Model(inputs, outputs)
-        # compile model
-        final.compile(optimizer=optimizers.Adam(lr=learning_rate, beta_1=0.9, beta_2=0.999, decay=0.01), loss=loss_fn,
-                      metrics=[metrics_type])
 
     # set call back seed
-
     np.random.seed(88)
 
     # Variables for k-fold cross-validation
@@ -310,6 +267,49 @@ def main():
             print(f"Train set outcomes: {y.iloc[train_index].unique()}")
             print(f"Test set outcomes: {y.iloc[val_index].unique()}")
             print('-' * 30)
+
+            # set model architecture
+            if pretrained_model:
+                weights = 'imagenet'
+            else:
+                weights = None
+            if model.lower() == "resnet101":
+                base_model = tf.keras.applications.resnet.ResNet101(include_top=False, weights=weights,
+                                                                    input_shape=image_shape, pooling=None)
+            elif model.lower() == "resnet50":
+                base_model = tf.keras.applications.resnet.ResNet50(include_top=False, weights=weights,
+                                                                   input_shape=image_shape, pooling=None)
+            elif model.lower() == "inception":
+                base_model = tf.keras.applications.InceptionV3(include_top=False, weights=weights,
+                                                               input_shape=image_shape, pooling=None)
+            else:
+                raise Exception("Please enter resnet101 or resnet50 to train")
+
+            inputs = tf.keras.Input(shape=image_shape)
+
+            m = base_model(inputs)
+
+            # GlobalAveragePooling2D layer was used to replace flatten layer to avoid overfitting
+            m = tf.keras.layers.GlobalAveragePooling2D()(m)
+
+            m = Dropout(drop_out)(m)
+
+            if n_class > 2:
+                outputs = tf.keras.layers.Dense(n_class, activation="softmax")(m)
+                loss_fn = losses.CategoricalCrossentropy(from_logits=False)
+                metrics_type = metrics.CategoricalAccuracy()
+                print("soft max activation is used in dense layer, CategoricalCrossentropy is used as loss function")
+            else:
+                outputs = tf.keras.layers.Dense(1, activation="sigmoid")(m)
+                loss_fn = losses.BinaryCrossentropy(from_logits=False)
+                metrics_type = metrics.BinaryAccuracy()
+                print("sigmoid activation is used in dense layer, BinaryCrossentropy is used as loss function")
+
+            final = tf.keras.Model(inputs, outputs)
+            # compile model
+            final.compile(optimizer=optimizers.Adam(lr=learning_rate, beta_1=0.9, beta_2=0.999, decay=0.01),
+                          loss=loss_fn,
+                          metrics=[metrics_type])
 
             # Split the data into training and validation sets for this fold
             train_fold, val_fold = meta_data.iloc[train_index], meta_data.iloc[val_index]
@@ -368,7 +368,6 @@ def main():
         # Calculate the average accuracy across all folds
         average_accuracy = np.mean(all_accuracies)
         print(f"Average Accuracy Across Folds: {average_accuracy:.4f}")
-
 
 if __name__ == "__main__":
     main()
