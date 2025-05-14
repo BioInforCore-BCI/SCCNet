@@ -36,3 +36,7 @@ To load a pre-trained model to predict or fine-tune on your own dataset simply d
 
     new_model = create_model()
     new_model.load_weights('model_name', by_name=True)
+
+# Sample tiles
+
+The folder tiles/ contains 7 tiles. Norm_tile.jpg is the tile we used for normalization. 6 other sample tiles from our test set are also given for inspection by users. non_met{1-3}.jpg are tiles from patients who did not metastasize, while met{1-3}.jpg are tiles from patients who did experience metastasis.
