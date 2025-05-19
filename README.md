@@ -39,4 +39,4 @@ To load a pre-trained model to predict or fine-tune on your own dataset simply d
 
 # Sample tiles
 
-The folder tiles/ contains 7 tiles. Norm_tile.jpg is the tile we used for normalization. 6 other sample tiles from our test set are also given for inspection by users. non_met{1-3}.jpg are tiles from patients who did not metastasize, while met{1-3}.jpg are tiles from patients who did experience metastasis.
+The tiles folder contains 7 tiles. Norm_tile.jpg is the template we used for colour normalization. 6 other sample tiles (before colour normalisation) from our testing cohort are also given for inspection by users: non_met{1-3}.jpg are tiles from primary cSCC which did not metastasize, while met{1-3}.jpg are tiles from cSCC which metastasized.
