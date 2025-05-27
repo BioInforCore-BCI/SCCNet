@@ -3,9 +3,7 @@ import numpy as np
 import argparse
 import pandas as pd
 from PIL import Image
-
-# Internal imports
-from utils.colour_normalisation.stainNorm_Macenko import load_normaliser
+from utils import load_normaliser
 
 
 def normalize_patches(patch_dir, save_dir, colour_norm=None):

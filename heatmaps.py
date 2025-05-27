@@ -5,9 +5,9 @@ import numpy as np
 import pandas as pd
 import argparse
 from PIL import Image
-from utils.WholeSlideImage_utils import WholeSlideImage
-from utils.wsi_utils import to_percentiles
-from utils.file_utils import load_config_yaml
+from utils import WholeSlideImage, load_config_yaml, to_percentiles
+
+
 
 """
 This script generates heatmaps according to score.csv files for each WSI.
