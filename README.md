@@ -56,6 +56,6 @@ To get started with the code, simply navigate into a new directory, and run:
     git clone https://github.com/BioInforCore-BCI/SCCNet.git
     cd SCCNet
     
-    python3.9 -m venv scc_env
+    python3 -m venv scc_env
     source scc_env/bin/activate
     pip install -r requirements.txt
