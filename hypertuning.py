@@ -180,7 +180,7 @@ def main():
                         help="Directory name where the input image is saved. default='./input'")
     parser.add_argument("--epoch", type=int, default=20,
                         help="Number of epoch. default=20")
-    parser.add_argument("--train_table", default="/data/BCI-DigitalPath/Emilia/QuPath/meta/ROIjpgTrain_short.csv",
+    parser.add_argument("--train_table", default="/data/Train.csv",
                         help="path to train table'")
     parser.add_argument("--batch_size", type=int, default=32,
                         help="batch_size")

@@ -1,0 +1,12 @@
+keras_tuner==1.4.7
+matplotlib~=3.9.4
+numpy~=2.0.2
+opencv_python~=4.11.0.86
+pandas==2.2.3
+pillow~=11.2.1
+scikit_learn==1.6.1
+tensorflow==2.19.0
+openslide-bin==4.0.0.8
+openslide-python==1.4.2
+scipy==1.13.1
+pyyaml==6.0.2

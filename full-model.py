@@ -141,7 +141,7 @@ def main():
                         help="Number of classes. default=2")
     parser.add_argument("--learning_rate", type=float, default=1e-4,
                         help="learning rate. default=1e-4")
-    parser.add_argument("--train_table", default="/data/BCI-DigitalPath/Emilia/QuPath/meta/ROIjpgTrain_short.csv",
+    parser.add_argument("--train_table", default="/data/Train.csv",
                         help="path to train table'")
     parser.add_argument("--data_shape", type=int, default=512,
                         help="shape")

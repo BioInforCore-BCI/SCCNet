@@ -9,7 +9,9 @@ To replicate the workflow of the paper run the python files in the following ord
 3. k-fold: Performs 5-fold cross validation. 
 4. full-model: For final model training on the entire training cohort.
 5. predictions: Generates tile-level predictions using the trained model.
-6. heatmaps: Generates heatmaps based on tile-level predictions. 
+6. heatmaps: Generates heatmaps based on tile-level predictions.
+
+The utils file contains some additional functions and classes which are required to run (1) and (6).
 
 
 # Load a trained model
@@ -36,3 +38,24 @@ To load a pre-trained model to predict or fine-tune on your own dataset simply d
 
     new_model = create_model()
     new_model.load_weights('model_name', by_name=True)
+
+# Sample tiles
+
+The tiles folder contains 7 tiles. Norm_tile.jpg is the template we used for colour normalization. 6 other sample tiles (before colour normalisation) from our testing cohort are also given for inspection by users: non_met{1-3}.jpg are tiles from primary cSCC which did not metastasize, while met{1-3}.jpg are tiles from cSCC which metastasized.
+
+This folder also contains the training table samples_table.csv, which is required for training models and prediction, here 'Outcome' refers to metastasis, and 'ROI' refers to whether a tile was inside or outside our annotated region of interest.
+
+
+# Installation instructions
+
+The code was originally developed in Python version 3.9. The file requirements.txt contains the minimal packages required to run the code.
+The code was tested in Linux (Rocky Linux 9.4 (Blue Onyx)) and MacOS (14.7.6).
+
+To get started with the code, simply navigate into a new directory, and run:
+
+    git clone https://github.com/BioInforCore-BCI/SCCNet.git
+    cd SCCNet
+    
+    python3 -m venv scc_env
+    source scc_env/bin/activate
+    pip install -r requirements.txt
