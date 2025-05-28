@@ -43,7 +43,10 @@ To load a pre-trained model to predict or fine-tune on your own dataset simply d
 
 The tiles folder contains 7 tiles. Norm_tile.jpg is the template we used for colour normalization. 6 other sample tiles (before colour normalisation) from our testing cohort are also given for inspection by users: non_met{1-3}.jpg are tiles from primary cSCC which did not metastasize, while met{1-3}.jpg are tiles from cSCC which metastasized.
 
+This folder also contains the training table samples_table.csv, which is required for training models and prediction, here 'Outcome' refers to metastasis, and 'ROI' refers to whether a tile was inside or outside our annotated region of interest.
+
 
 # Python environment
 
-The code was originally developed in Python version 3.9.13. The file requirements.txt contains the minimal packages required to run the code.
+The code was originally developed in Python version 3.9. The file requirements.txt contains the minimal packages required to run the code.
+The code was tested in Linux (Rocky Linux 9.4 (Blue Onyx)) and MacOS (14.7.6).
