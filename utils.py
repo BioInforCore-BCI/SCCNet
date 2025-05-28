@@ -6,7 +6,7 @@ from PIL import Image
 import openslide
 import pickle
 import yaml
-from sklearn.linear_model import Lasso
+from scipy.optimize import nnls
 from scipy.stats import rankdata
 
 
@@ -96,22 +96,23 @@ def notwhite_mask(I, thresh=0.8):
 def sign(x):
     return (x > 0) - (x < 0)
 
-def get_concentrations(I, stain_matrix, lamda=0.01):
-    OD = RGB_to_OD(I).reshape((-1, 3))  # shape (num_pixels, 3)
+def get_concentrations(I, stain_matrix):
+    # Convert image to OD space
+    OD = RGB_to_OD(I).reshape((-1, 3))  # shape: (num_pixels, 3)
     n_pixels = OD.shape[0]
     n_stains = stain_matrix.shape[0]
+
+    # Initialize concentrations array
     concentrations = np.zeros((n_pixels, n_stains))
 
-    # Initialize Lasso model
-    lasso = Lasso(alpha=lamda, positive=True, max_iter=1000)
+    # Transpose stain_matrix to shape (3, n_stains)
+    X = stain_matrix.T
 
-    # Fit each pixel spectrum as target, stain_matrix as predictors
-    # Note: stain_matrix.T shape (3, n_stains)
+    # Solve NNLS for each pixel
     for i in range(n_pixels):
-        y = OD[i, :]           # shape (3,)
-        X = stain_matrix.T     # shape (3, n_stains)
-        lasso.fit(X, y)
-        concentrations[i, :] = lasso.coef_
+        y = OD[i, :]
+        coeffs, _ = nnls(X, y)
+        concentrations[i, :] = coeffs
 
     return concentrations
 

@@ -1,7 +1,6 @@
 import os
 import numpy as np
 import argparse
-import pandas as pd
 from PIL import Image
 from utils import load_normaliser
 
