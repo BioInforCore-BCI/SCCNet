@@ -35,11 +35,76 @@ This folder also contains the training table samples_table.csv, which is require
 
 # Detailed instructions
 
-To run the entire pipeline on your own dataset, first ensure you have followed the installation instructions above and saved your WSI tiles in a folder named 'tiles'. This folder should also contain a training table with the same columns as the provided 'samples_table.csv'. Then, run the following commands in a command prompt or terminal, in the order shown:
+To run the entire pipeline on your own dataset, first ensure you have followed the installation instructions above and saved your WSI tiles in a folder named 'tiles'. This folder should also contain a training table with the same columns as the provided 'samples_table.csv', and a tile used as the standard for colour normalization, named Norm_tile.jpg. The user can either use the provided tile or select their own. Finally, there should also exist a folder named 'results' in the current directory. Then, run the following commands in a command prompt or terminal, in the order shown:
 
-    1. python pre-processing.py --patch_dir /tiles --save_dir /tiles_norm --colour_standard /tiles/Norm_tile.jpg
+    1. python pre-processing.py \
+          --patch_dir /tiles \
+          --save_dir /tiles_norm \
+          --colour_standard /tiles/Norm_tile.jpg
 
-    2.
+    2. python hypertuning.py \
+          --input /tiles_norm \
+          --epoch 20 \
+          --train_table /tiles/samples_table.csv \
+          --batch_size 32 \
+          --image_format jpeg \
+          --label_col Outcome \
+          --file_col File \
+          --patient_col Patient \
+          --sample 1000 \
+          --patience 5 \
+          --save_folder tuner_output
+
+    3. python k-fold.py \
+          --input \tiles_norm \
+          --epoch 20 \
+          --learning_rate 0.0001 \
+          --train_table /tiles/samples_table.csv \
+          --data_shape 512 \
+          --batch_size 32 \
+          --image_format jpeg \
+          --drop_out 0.2 \
+          --model resnet50 \
+          --label_col Outcome \
+          --file_col File \
+          --patient_col Patient \
+          --pretrained \
+          --result_dir /results \
+          --model_savename kfold_model_name.h5 \
+          --num_folds 5 \
+          --sample 1000 \
+          --early_stopping
+
+    4. python full-model.py \
+          --input \tiles_norm \
+          --epoch 40 \
+          --learning_rate 0.0001 \
+          --train_table /tiles/samples_table.csv \
+          --data_shape 512 \
+          --batch_size 32 \
+          --image_format jpeg \
+          --drop_out 0.2 \
+          --model resnet50 \
+          --label_col Outcome \
+          --file_col File \
+          --patient_col Patient \
+          --pretrained \
+          --result_dir /results \
+          --model_savename full_model_name.h5 \
+          --sample 1000 \
+          --early_stopping
+
+    5. python predictions.py \
+          --img_path /tiles_orm \
+          --process_list ./process_list.csv \
+          --model /results/full_model_name.h5 \
+          --img_shape 256 \
+          --batch_size 32 \
+          --save_dir /results \
+          --save_name predictions \
+          --filename_col File
+
+
 
 
 # Load a trained model
