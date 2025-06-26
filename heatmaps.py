@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import argparse
 from PIL import Image
-from utils import WholeSlideImage, load_config_yaml, to_percentiles
+from utils import WholeSlideImage, to_percentiles
 
 
 
@@ -214,13 +214,59 @@ def create_multi_heatmaps(data_args, heatmap_args):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Heatmap inference script')
-    parser.add_argument('--config_file', type=str, default="config_file.yaml")
+    parser = argparse.ArgumentParser(description='Heatmap generation script')
+
+    # Data arguments
+    parser.add_argument('--process_list', type=str, required=True, help='Path to process_list CSV file')
+    parser.add_argument('--wsi_dir', type=str, required=True, help='Directory containing WSI files')
+    parser.add_argument('--score_dir', type=str, required=True, help='Directory containing score CSV files')
+    parser.add_argument('--wsi_format', type=str, default='svs', help='File extension of WSI files (default: svs)')
+
+    # Heatmap arguments
+    parser.add_argument('--heatmap_save_dir', type=str, default='./heatmaps', help='Directory to save heatmaps')
+    parser.add_argument('--patch_size', type=int, default=512, help='Patch size for heatmap')
+    parser.add_argument('--save_ext', type=str, default='png', help='File extension for saved heatmaps')
+    parser.add_argument('--vis_level', type=int, default=1, help='Visualization level')
+    parser.add_argument('--heatmap_mode', type=str, default='percentiles', choices=['percentiles', 'binarise', 'extreme'], help='Heatmap mode')
+    parser.add_argument('--thresh_high', type=float, default=0.7, help='High threshold for extreme mode')
+    parser.add_argument('--thresh_low', type=float, default=0.3, help='Low threshold for extreme mode')
+    parser.add_argument('--threshold', type=float, default=0.6, help='Threshold for binarise mode')
+    parser.add_argument('--blank_canvas', action='store_true', help='Render heatmap on blank canvas')
+    parser.add_argument('--blur', action='store_true', help='Apply Gaussian blur')
+    parser.add_argument('--alpha', type=float, default=0.6, help='Alpha blending value for overlay')
+    parser.add_argument('--overlap', type=float, default=0.0, help='Overlap ratio between patches')
+    parser.add_argument('--custom_downsample', type=int, default=1, help='Custom downsampling factor')
+    parser.add_argument('--max_size', type=int, default=None, help='Maximum size for saved heatmap image')
+    parser.add_argument('--cmap', type=str, default='viridis', help='Colormap to use for heatmap')
+    parser.add_argument('--save_orig', action='store_true', help='Save original WSI image alongside heatmap')
+
     args = parser.parse_args()
 
-    args = load_config_yaml(args.config_file)
+    # Assemble dicts to match the original function signatures
+    data_args = {
+        'process_list': args.process_list,
+        'wsi_dir': args.wsi_dir,
+        'score_dir': args.score_dir,
+        'wsi_format': args.wsi_format
+    }
 
-    data_args = args['data_arguments']
-    heatmap_args = args['heatmap_arguments']
+    heatmap_args = {
+        'heatmap_save_dir': args.heatmap_save_dir,
+        'patch_size': args.patch_size,
+        'save_ext': args.save_ext,
+        'vis_level': args.vis_level,
+        'heatmap_mode': args.heatmap_mode,
+        'thresh_high': args.thresh_high,
+        'thresh_low': args.thresh_low,
+        'threshold': args.threshold,
+        'blank_canvas': args.blank_canvas,
+        'blur': args.blur,
+        'alpha': args.alpha,
+        'overlap': args.overlap,
+        'custom_downsample': args.custom_downsample,
+        'max_size': args.max_size,
+        'cmap': args.cmap,
+        'save_orig': args.save_orig
+    }
 
     create_multi_heatmaps(data_args, heatmap_args)
