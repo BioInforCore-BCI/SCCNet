@@ -1,22 +1,44 @@
+from tensorflow import keras
 from tensorflow.keras.models import Model, load_model
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.applications import ResNet50
+from tensorflow.keras.layers import Input, GlobalAveragePooling2D, Dropout, Dense
 import os
 import pandas as pd
 import argparse
 
 
-def load_model_4_prediction(file="name.h5", features=True):
+def create_model(img_shape=(512, 512, 3)):
     """
-    Function to load saved model for class prediction of feature extraction.
-    :param file:
-    :param features:
-    :return:
+    Generates SCCNet model without set weights
     """
-    mod = load_model(file)
-    # Check the type of prediction required
+    input_layer = Input(shape=img_shape)
+    resnet_base = ResNet50(weights=None, include_top=False, input_tensor=input_layer)
+    x = GlobalAveragePooling2D()(resnet_base.output)
+    x = Dropout(0.5)(x)
+    output_layer = Dense(1, activation='sigmoid')(x)
+    model = keras.Model(inputs=input_layer, outputs=output_layer, name="model")
+    return model
+
+def load_model_4_prediction(file="name.h5", features=True, weights_only=False, img_shape=(512, 512, 3)):
+    """
+    Load saved model for class prediction or feature extraction.
+    Supports both full saved model or model weights.
+    """
+    if weights_only:
+        print("Loading model architecture and weights from:", file)
+        mod = create_model(img_shape=img_shape)
+        mod.load_weights(file, by_name=True)
+    else:
+        print("Loading full saved model:", file)
+        mod = load_model(file)
+
     if features:
-        # Get the Feature layer flattened
-        mod = Model(inputs=mod.input, outputs=mod.get_layer("Features").output)
+        try:
+            mod = Model(inputs=mod.input, outputs=mod.get_layer("Features").output)
+        except ValueError:
+            print("Warning: 'Features' layer not found — skipping feature extraction mode.")
+
     mod.summary()
     return mod
 
@@ -67,6 +89,8 @@ if __name__ == '__main__':
                         help='result_name_to_save')
     parser.add_argument('--filename_col', type=str, default="Name",
                         help='colname of filenames in metatable')
+    parser.add_argument('--weights_only', action='store_true',
+                        help='If set, loads only weights into a predefined model architecture instead of full saved model')
 
     args = parser.parse_args()
     img_path = args.img_path
@@ -77,6 +101,7 @@ if __name__ == '__main__':
     nam = args.model
     save_name = args.save_name
     col_name = args.filename_col
+    weights_only = args.weights_only
 
     os.makedirs(result_dir, exist_ok=True)
     # Test generator
@@ -88,7 +113,8 @@ if __name__ == '__main__':
                                        col_path=col_name, shuf=False)
 
     # Load trained models
-    mod_class = load_model_4_prediction(file=nam, features=False)
+    mod_class = load_model_4_prediction(file=nam, features=False, weights_only=weights_only,
+                                        img_shape=(args.img_shape, args.img_shape, 3))
 
     # Softmax
     pre_clas = pd.DataFrame(mod_class.predict(predict_generator))

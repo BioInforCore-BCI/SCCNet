@@ -1,7 +1,7 @@
 ﻿File,Outcome,ROI,Patient
-met1.jpg,Yes,Yes,P1
-met2.jpg,Yes,Yes,P2
-met3.jpg,Yes,Yes,P3
-non_met1.jpg,No,Yes,P4
-non_met2.jpg,No,Yes,P5
-non_met3.jpg,No,Yes,P6
+met1_x_0_y_0.jpg,Yes,Yes,P1
+met2_x_512_y_10240.jpg,Yes,Yes,P2
+met3_x_6656_y_8704.jpg,Yes,Yes,P3
+non_met1_x_36864_y_1024.jpg,No,Yes,P4
+non_met2_x_22016_y_31232.jpg,No,Yes,P5
+non_met3_x_1536_y_32768.jpg,No,Yes,P6
