@@ -16,7 +16,7 @@ To get started with the code, simply navigate into a new directory, and run:
     source scc_env/bin/activate
     pip install -r requirements.txt
 
-# Sample tiles
+# Sample data
 
 The tiles folder contains 7 tiles. Norm_tile.jpg is the template we used for colour normalization. 6 other sample tiles (before colour normalisation) from our testing cohort are also given for inspection by users: non_met{1-3...}jpg are tiles from primary cSCC which did not metastasize, while met{1-3...}.jpg are tiles from cSCC which metastasized.
 
