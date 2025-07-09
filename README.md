@@ -20,7 +20,7 @@ To get started with the code, simply navigate into a new directory, and run:
 
 The tiles folder contains 7 tiles. Norm_tile.jpg is the template we used for colour normalization. 6 other sample tiles (before colour normalisation) from our testing cohort are also given for inspection by users: non_met{1-3...}jpg are tiles from primary cSCC which did not metastasize, while met{1-3...}.jpg are tiles from cSCC which metastasized.
 
-This folder also contains the training table samples_table.csv, which is required for training models and prediction, here 'Outcome' refers to metastasis, and 'ROI' refers to whether a tile was inside or outside our annotated region of interest.
+This folder also contains the metadata samples_table.csv, which is similar to tables used for training models and evaluating predictions. Here 'Outcome' refers to metastasis, and 'ROI' refers to whether a tile was inside or outside our annotated region of interest.
 
 # Replicating the pipeline
 
@@ -40,12 +40,12 @@ To run the entire pipeline on your own dataset, first ensure you have followed t
               --input /tiles_norm \
               --epoch 20 \
               --train_table /tiles/samples_table.csv \
-              --batch_size 32 \
+              --batch_size 64 \
               --image_format jpeg \
               --label_col Outcome \
               --file_col File \
               --patient_col Patient \
-              --sample 1000 \
+              --sample 500 \
               --patience 5 \
               --save_folder tuner_output
    
@@ -57,7 +57,7 @@ To run the entire pipeline on your own dataset, first ensure you have followed t
               --learning_rate 0.0001 \
               --train_table /tiles/samples_table.csv \
               --data_shape 512 \
-              --batch_size 32 \
+              --batch_size 64 \
               --image_format jpeg \
               --drop_out 0.2 \
               --model resnet50 \
@@ -68,18 +68,18 @@ To run the entire pipeline on your own dataset, first ensure you have followed t
               --result_dir /results \
               --model_savename kfold_model_name.h5 \
               --num_folds 5 \
-              --sample 1000 \
+              --sample 500 \
               --early_stopping
    
 4. full-model: For final model training on the entire training cohort.
 
        python full-model.py \
               --input \tiles_norm \
-              --epoch 40 \
+              --epoch 20 \
               --learning_rate 0.0001 \
               --train_table /tiles/samples_table.csv \
               --data_shape 512 \
-              --batch_size 32 \
+              --batch_size 64 \
               --image_format jpeg \
               --drop_out 0.2 \
               --model resnet50 \
@@ -89,7 +89,7 @@ To run the entire pipeline on your own dataset, first ensure you have followed t
               --pretrained \
               --result_dir /results \
               --model_savename full_model.h5 \
-              --sample 1000 \
+              --sample 500 \
               --early_stopping
 
 Steps 5 and 6 of the code are concerned with generation of predictions and heatmaps from the model trained in step 4. The following code snippets assume that the user has saved a full model using step 4. If instead the user would like to generate predictions/ heatmaps using the provided model weights see subsection 'Generating predictions using provided weights'.
@@ -101,7 +101,7 @@ Steps 5 and 6 of the code are concerned with generation of predictions and heatm
               --process_list /tiles/samples_table.csv \
               --model /results/full_model.h5 \
               --img_shape 512 \
-              --batch_size 32 \
+              --batch_size 64 \
               --save_dir /results \
               --save_name predictions \
               --filename_col File
@@ -119,8 +119,7 @@ Steps 5 and 6 of the code are concerned with generation of predictions and heatm
               --heatmap_save_dir /results/heatmaps \
               --patch_size 512 \
               --heatmap_mode percentiles \
-              --alpha 0.5 \
-              --blur 
+              --alpha 0.4
 
 ## Generating predictions using provided weights
 
