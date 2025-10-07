@@ -4,7 +4,7 @@ Emilia Peleva*, Yue Chen*, Bernhard Finke, Hasan Rizvi, Eugene Healy, Chester La
 
 # Installation instructions
 
-The code was originally developed in Python version 3.9. The file requirements.txt contains the minimal packages required to run the code.
+The code was originally developed in Python version 3.12. The file requirements.txt contains the minimal packages required to run the code.
 The code was tested in Linux (Rocky Linux 9.4 (Blue Onyx)) and MacOS (14.7.6).
 
 To get started with the code, simply navigate into a new directory, and run:
